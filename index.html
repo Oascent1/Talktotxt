@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Speech To Txt</title>
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --text: #333;
+      --box: #fff;
+      --accent: #007bff;
+      --status: #28a745;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #eee;
+      --box: #1e1e1e;
+      --accent: #1e90ff;
+      --status: #76ff03;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      margin: auto;
+      background: var(--box);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input, textarea, button, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: var(--box);
+      color: var(--text);
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #status {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: var(--status);
+    }
+
+    .history {
+      margin-top: 20px;
+    }
+
+    .note-item {
+      background: var(--box);
+      padding: 10px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .note-item button {
+      margin-top: 5px;
+      font-size: 14px;
+      background: #dc3545;
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .toggle-theme {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+ 🗣️TalkToTxt
+      <button class="toggle-theme" id="themeToggle">🌙</button>
+    </h1>
+
+    <label for="label">Label</label>
+    <input type="text" id="label" placeholder="e.g. Idea, Reminder" />
+
+    <button id="startBtn">🎙️ Start Recording</button>
+    <p id="status">Idle</p>
+
+    <label for="note">Transcribed Note</label>
+    <textarea id="note" placeholder="Your note appears here..."></textarea>
+
+    <button id="saveBtn">💾 Save Note</button>
+
+    <div class="history">
+      <h3>📚 Saved Notes</h3>
+      <div id="noteHistory"></div>
+    </div>
+  </div>
+
+  <footer>Built by Oascent· Works offline · No cloud BS</footer>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const noteArea = document.getElementById('note');
+    const labelInput = document.getElementById('label');
+    const status = document.getElementById('status');
+    const saveBtn = document.getElementById('saveBtn');
+    const noteHistory = document.getElementById('noteHistory');
+    const themeToggle = document.getElementById('themeToggle');
+
+    // Dark mode toggle
+    themeToggle.onclick = () => {
+      document.body.classList.toggle('dark');
+      const icon = document.body.classList.contains('dark') ? '☀️' : '🌙';
+      themeToggle.textContent = icon;
+    };
+
+    // Speech recognition
+    const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!recognition) {
+      alert("Speech Recognition not supported in your browser.");
+    } else {
+      const recorder = new recognition();
+      recorder.continuous = false;
+      recorder.interimResults = false;
+      recorder.lang = 'en-US';
+
+      startBtn.onclick = () => {
+        status.textContent = "🎧 Listening...";
+        recorder.start();
+      };
+
+      recorder.onresult = event => {
+        const transcript = event.results[0][0].transcript;
+        noteArea.value += transcript + '\n';
+        status.textContent = "✅ Done";
+      };
+
+      recorder.onerror = (event) => {
+        status.textContent = "❌ Error: " + event.error;
+      };
+    }
+
+    // Save note to file + localStorage
+    saveBtn.onclick = () => {
+      const label = labelInput.value.trim() || "voice-note";
+      const text = noteArea.value.trim();
+      if (!text) return alert("Write or speak a note first!");
+
+      const content = `Label: ${label}\n\nNote:\n${text}`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${label.replace(/\s+/g, '_')}.txt`;
+      a.click();
+
+      const saved = JSON.parse(localStorage.getItem('notes') || '[]');
+      saved.unshift({ label, text, time: new Date().toLocaleString() });
+      localStorage.setItem('notes', JSON.stringify(saved));
+      loadNotes();
+      noteArea.value = "";
+    };
+
+    // Load saved notes
+    function loadNotes() {
+      noteHistory.innerHTML = '';
+      const saved = JSON.parse(localStorage.getItem('notes') || '[]');
+      if (saved.length === 0) {
+        noteHistory.innerHTML = '<p>No notes saved yet.</p>';
+        return;
+      }
+
+      saved.forEach((note, index) => {
+        const div = document.createElement('div');
+        div.className = 'note-item';
+        div.innerHTML = `
+          <strong>${note.label}</strong><br>
+          <small>${note.time}</small><br>
+          <p>${note.text.slice(0, 100)}...</p>
+          <button onclick="deleteNote(${index})">Delete</button>
+        `;
+        noteHistory.appendChild(div);
+      });
+    }
+
+    function deleteNote(index) {
+      const saved = JSON.parse(localStorage.getItem('notes') || '[]');
+      saved.splice(index, 1);
+      localStorage.setItem('notes', JSON.stringify(saved));
+      loadNotes();
+    }
+
+    // Init
+    loadNotes();
+  </script>
+</body>
+</html>
