@@ -2,91 +2,233 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Speech To Txt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalkToTxt | Modern Speech-to-Text App</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --bg: #f5f5f5;
-      --text: #333;
-      --box: #fff;
-      --accent: #007bff;
-      --status: #28a745;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
     }
 
-    body.dark {
-      --bg: #121212;
-      --text: #eee;
-      --box: #1e1e1e;
-      --accent: #1e90ff;
-      --status: #76ff03;
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --background: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --success: #10b981;
+      --error: #ef4444;
+      --border: #334155;
+      --shadow: rgba(0, 0, 0, 0.25);
     }
 
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg);
+      background: linear-gradient(135deg, var(--background), #0c1220);
       color: var(--text);
-      padding: 20px;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .container {
-      max-width: 500px;
+      max-width: 800px;
       width: 100%;
-      margin: auto;
-      background: var(--box);
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-      box-sizing: border-box;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
     }
 
     h1 {
-      text-align: center;
-      font-size: 1.8em;
-      margin-bottom: 20px;
+      font-size: 2.25rem;
+      font-weight: 800;
+      background: linear-gradient(to right, var(--text), #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
     }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    input, textarea, button, select {
+    .app-container {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 1.75rem;
+    }
+
+    .input-area, .output-area {
+      position: relative;
+    }
+
+    input, textarea, .output {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      background: var(--box);
+      padding: 1.5rem;
+      border-radius: 16px;
+      font-size: 1rem;
+      background: rgba(15, 23, 42, 0.7);
       color: var(--text);
-      box-sizing: border-box;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      resize: vertical;
     }
 
     textarea {
-      resize: vertical;
-      min-height: 120px;
+      min-height: 180px;
+      line-height: 1.6;
     }
 
-    button {
-      background: var(--accent);
-      color: white;
-      font-weight: bold;
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .output {
+      min-height: 180px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+
+    .area-title {
+      position: absolute;
+      top: -10px;
+      left: 15px;
+      background: var(--card);
+      padding: 0 10px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.5rem 0;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 0.9rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
-      transition: background 0.2s ease-in-out;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(67, 97, 238, 0.15);
+      color: var(--primary);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    button:hover {
-      opacity: 0.9;
+    .btn:hover {
+      background: rgba(67, 97, 238, 0.25);
+      transform: translateY(-2px);
     }
 
-    #status {
-      text-align: center;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: var(--status);
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #651d96);
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+    }
+
+    .btn-success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .btn-success:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .history {
@@ -94,86 +236,251 @@
     }
 
     .note-item {
-      background: var(--box);
-      padding: 10px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--accent);
-      border-radius: 6px;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      max-width: 100%;
-      box-sizing: border-box;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 4px 8px var(--shadow);
+      transition: all 0.3s ease;
     }
 
-    .note-item button {
-      margin-top: 5px;
-      font-size: 14px;
-      background: #dc3545;
+    .note-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px var(--shadow);
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .note-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .note-time {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .note-content {
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      background: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: rgba(67, 97, 238, 0.2);
+    }
+
+    .action-btn.delete {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+    }
+
+    .action-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .mic-icon {
+      font-size: 1.5rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .listening .mic-icon {
+      color: var(--success);
+      animation: pulse 0.5s infinite;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 5px 15px var(--shadow);
+      border-left: 4px solid var(--success);
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notification.show {
+      transform: translateX(0);
     }
 
     footer {
-      margin-top: 20px;
       text-align: center;
-      font-size: 12px;
-      color: #888;
+      margin-top: 2rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
     }
 
-    .toggle-theme {
-      float: right;
-      background: none;
-      border: none;
-      color: var(--accent);
-      cursor: pointer;
-      font-size: 14px;
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .panel {
+        padding: 1.25rem;
+      }
+      
+      .btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>
- 🗣️TalkToTxt
-      <button class="toggle-theme" id="themeToggle">🌙</button>
-    </h1>
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-microphone-alt"></i>
+        </div>
+        <h1>TalkToTxt</h1>
+      </div>
+      <p class="subtitle">Speak your thoughts, transform them into text</p>
+    </header>
 
-    <label for="label">Label</label>
-    <input type="text" id="label" placeholder="e.g. Idea, Reminder" />
-
-    <button id="startBtn">🎙️ Start Recording</button>
-    <p id="status">Idle</p>
-
-    <label for="note">Transcribed Note</label>
-    <textarea id="note" placeholder="Your note appears here..."></textarea>
-
-    <button id="saveBtn">💾 Save Note</button>
-
+    <div class="app-container">
+      <div class="panel">
+        <div class="input-area">
+          <div class="area-title">Label</div>
+          <input type="text" id="label" placeholder="e.g. Meeting Notes, Idea, Reminder" />
+        </div>
+        
+        <div class="controls">
+          <div class="btn-group">
+            <button class="btn btn-primary" id="startBtn">
+              <i class="fas fa-microphone-alt mic-icon"></i> Start Recording
+            </button>
+            <button class="btn" id="clearBtn">
+              <i class="fas fa-eraser"></i> Clear
+            </button>
+          </div>
+        </div>
+        
+        <div class="output-area">
+          <div class="area-title">Transcription</div>
+          <textarea id="note" placeholder="Your transcribed text will appear here..."></textarea>
+        </div>
+        
+        <div class="stats">
+          <div class="stat">
+            <i class="fas fa-font"></i>
+            <span id="charCount">0 characters</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-clock"></i>
+            <span>Status: <span id="status">Idle</span></span>
+          </div>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn btn-success" id="saveBtn">
+            <i class="fas fa-save"></i> Save Note
+          </button>
+          <button class="btn" id="exportBtn">
+            <i class="fas fa-download"></i> Export
+          </button>
+        </div>
+      </div>
+    </div>
+    
     <div class="history">
-      <h3>📚 Saved Notes</h3>
+      <h3><i class="fas fa-history"></i> Note History</h3>
       <div id="noteHistory"></div>
     </div>
+    
+    <footer>
+      <p>Built by Oascent · Works offline · No cloud BS</p>
+    </footer>
+  </div>
+  
+  <div class="notification" id="notification">
+    <i class="fas fa-check-circle"></i>
+    <span id="notification-text">Copied to clipboard!</span>
   </div>
 
-  <footer>Built by Oascent· Works offline · No cloud BS</footer>
-
   <script>
+    // DOM Elements
     const startBtn = document.getElementById('startBtn');
     const noteArea = document.getElementById('note');
     const labelInput = document.getElementById('label');
     const status = document.getElementById('status');
     const saveBtn = document.getElementById('saveBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const clearBtn = document.getElementById('clearBtn');
     const noteHistory = document.getElementById('noteHistory');
-    const themeToggle = document.getElementById('themeToggle');
+    const charCount = document.getElementById('charCount');
+    const notification = document.getElementById('notification');
+    const notificationText = document.getElementById('notification-text');
 
-    // Dark mode toggle
-    themeToggle.onclick = () => {
-      document.body.classList.toggle('dark');
-      const icon = document.body.classList.contains('dark') ? '☀️' : '🌙';
-      themeToggle.textContent = icon;
-    };
+    // Show notification
+    function showNotification(message, isSuccess = true) {
+      notificationText.textContent = message;
+      notification.style.borderLeftColor = isSuccess ? 'var(--success)' : 'var(--error)';
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Update character count
+    function updateCharCount() {
+      const text = noteArea.value;
+      charCount.textContent = `${text.length} characters`;
+    }
 
     // Speech recognition
     const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!recognition) {
-      alert("Speech Recognition not supported in your browser.");
+      showNotification("Speech Recognition not supported in your browser.", false);
+      startBtn.disabled = true;
     } else {
       const recorder = new recognition();
       recorder.continuous = false;
@@ -181,47 +488,94 @@
       recorder.lang = 'en-US';
 
       startBtn.onclick = () => {
-        status.textContent = "🎧 Listening...";
-        recorder.start();
+        if (startBtn.classList.contains('listening')) {
+          recorder.stop();
+          startBtn.classList.remove('listening');
+          status.textContent = "Idle";
+          showNotification("Recording stopped");
+        } else {
+          status.textContent = "Listening...";
+          startBtn.classList.add('listening');
+          recorder.start();
+          showNotification("Recording started - speak now");
+        }
       };
 
       recorder.onresult = event => {
         const transcript = event.results[0][0].transcript;
-        noteArea.value += transcript + '\n';
-        status.textContent = "✅ Done";
+        noteArea.value += transcript + ' ';
+        updateCharCount();
+        status.textContent = "Transcription complete";
+        startBtn.classList.remove('listening');
+        showNotification("Speech transcribed successfully");
       };
 
       recorder.onerror = (event) => {
-        status.textContent = "❌ Error: " + event.error;
+        status.textContent = `Error: ${event.error}`;
+        startBtn.classList.remove('listening');
+        showNotification(`Error: ${event.error}`, false);
       };
     }
 
-    // Save note to file + localStorage
+    // Clear button
+    clearBtn.onclick = () => {
+      noteArea.value = "";
+      labelInput.value = "";
+      updateCharCount();
+      showNotification("Cleared input fields");
+    };
+
+    // Save note to localStorage
     saveBtn.onclick = () => {
       const label = labelInput.value.trim() || "voice-note";
       const text = noteArea.value.trim();
-      if (!text) return alert("Write or speak a note first!");
+      
+      if (!text) {
+        showNotification("Please record or enter text first!", false);
+        return;
+      }
 
+      const saved = JSON.parse(localStorage.getItem('notes') || '[]');
+      const note = { 
+        label, 
+        text, 
+        time: new Date().toLocaleString(),
+        timestamp: new Date().getTime()
+      };
+      
+      saved.unshift(note);
+      localStorage.setItem('notes', JSON.stringify(saved));
+      
+      loadNotes();
+      showNotification("Note saved successfully");
+    };
+
+    // Export note
+    exportBtn.onclick = () => {
+      const label = labelInput.value.trim() || "voice-note";
+      const text = noteArea.value.trim();
+      
+      if (!text) {
+        showNotification("Nothing to export!", false);
+        return;
+      }
+      
       const content = `Label: ${label}\n\nNote:\n${text}`;
       const blob = new Blob([content], { type: 'text/plain' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = `${label.replace(/\s+/g, '_')}.txt`;
       a.click();
-
-      const saved = JSON.parse(localStorage.getItem('notes') || '[]');
-      saved.unshift({ label, text, time: new Date().toLocaleString() });
-      localStorage.setItem('notes', JSON.stringify(saved));
-      loadNotes();
-      noteArea.value = "";
+      showNotification("Note exported successfully");
     };
 
     // Load saved notes
     function loadNotes() {
       noteHistory.innerHTML = '';
       const saved = JSON.parse(localStorage.getItem('notes') || '[]');
+      
       if (saved.length === 0) {
-        noteHistory.innerHTML = '<p>No notes saved yet.</p>';
+        noteHistory.innerHTML = '<div class="note-item"><p>No notes saved yet.</p></div>';
         return;
       }
 
@@ -229,23 +583,47 @@
         const div = document.createElement('div');
         div.className = 'note-item';
         div.innerHTML = `
-          <strong>${note.label}</strong><br>
-          <small>${note.time}</small><br>
-          <p>${note.text.slice(0, 100)}...</p>
-          <button onclick="deleteNote(${index})">Delete</button>
+          <div class="note-header">
+            <div class="note-title">${note.label}</div>
+            <div class="note-time">${note.time}</div>
+          </div>
+          <div class="note-content">${note.text.slice(0, 150)}${note.text.length > 150 ? '...' : ''}</div>
+          <div class="note-actions">
+            <button class="action-btn" onclick="copyNote(${index})">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+            <button class="action-btn delete" onclick="deleteNote(${index})">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
         `;
         noteHistory.appendChild(div);
       });
     }
 
+    // Copy note to clipboard
+    function copyNote(index) {
+      const saved = JSON.parse(localStorage.getItem('notes') || '[]');
+      const note = saved[index];
+      
+      if (note) {
+        navigator.clipboard.writeText(note.text).then(() => {
+          showNotification("Note copied to clipboard");
+        });
+      }
+    }
+
+    // Delete note
     function deleteNote(index) {
       const saved = JSON.parse(localStorage.getItem('notes') || '[]');
       saved.splice(index, 1);
       localStorage.setItem('notes', JSON.stringify(saved));
       loadNotes();
+      showNotification("Note deleted");
     }
 
     // Init
+    noteArea.addEventListener('input', updateCharCount);
     loadNotes();
   </script>
 </body>
